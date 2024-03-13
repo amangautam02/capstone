@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Head content (meta tags, title, CSS) -->
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .container {
+            margin-top: 50px;
+        }
+    </style>
+
+</head>
+<body>
+
+<div class="container">
+    <h2>Patient Records Management</h2>
+
+    <!-- Create Patient Form -->
+    <div class="card mt-4">
+        <div class="card-header">
+            Create a New Patient
+        </div>
+        <div class="card-body">
+            <form id="createPatientForm">
+                <!-- Add your form fields here (SSN, First Name, Last Name, Phone) -->
+                <input type="text" id = 'firstname' placeholder="firstname" required>
+                <input type="text" id = 'lastname' placeholder="lastname" required>
+                <input type="text" id="phone" placeholder="phone" required>
+
+                <input type="text" id="age" placeholder="phone" required>
+
+                <input type="text" id="record" placeholder="status" required>
+
+                <input type="submit" id ='createsubmit' class="btn btn-success" >
+
+            </form>
+            <div id="patientcreate" class="mt-4"></div>
+        </div>
+    </div>
+
+    <!-- Get Patient Records Form -->
+    <div class="card mt-4">
+        <div class="card-header">
+            Get Patient Records
+        </div>
+        <div class="card-body">
+            <form id="getRecordsForm">
+                <!-- Add your form fields here (SSN, First Name, Last Name) -->
+                <input type="text" id = 'ssnget' placeholder="ssn" required>
+                <input type="text" id = 'firstnameget' placeholder="firstname" required>
+                <input type="text" id = 'lastnameget' placeholder="lastname" required>
+                <button type="button" class="btn btn-success" onclick=" getPatientRecords()">Get Patient Records</button>
+            </form>
+            <!-- Display Patient Records -->
+            <div id="patientRecords" class="mt-4"></div>
+        </div>
+    </div>
+
+    <!-- Update Patient Form -->
+    <div class="card mt-4">
+        <div class="card-header">
+            Update Patient Phone Number
+        </div>
+        <div class="card-body">
+            <form id="updatePatientForm">
+                <!-- Add your form fields here (SSN, First Name, Last Name, New Phone) -->
+                <input type="text" id = 'ssnupdate' placeholder="ssn" required>
+                <input type="text" id = 'firstnameupdate' placeholder="firstname" required>
+                <input type="text" id = 'lastnameupdate' placeholder="lastname" required>
+                <input type="text" id="phoneupdate" placeholder="phone" required>
+                <input type="text" id="recordupdate" placeholder="record" required>
+                <button type="button" class="btn btn-warning" onclick="updatePatient()">Update Details</button>
+            </form>
+            <div id="patientupdate" class="mt-4"></div>
+        </div>
+    </div>
+
+    <!-- Delete Patient Form -->
+    <div class="card mt-4">
+        <div class="card-header">
+            Delete Patient Record
+        </div>
+        <div class="card-body">
+            <form id="deletePatientForm">
+                <!-- Add your form fields here (SSN, First Name, Last Name) -->
+                <input type="text" id = 'ssndelete' placeholder="ssn" required>
+                <input type="text" id = 'firstnamedelete' placeholder="firstname" required>
+                <input type="text" id = 'lastnamedelete' placeholder="lastname" required>
+                <button type="button" class="btn btn-danger" onclick=" deletePatient()">Delete Patient</button>
+            </form>
+            <div id="patientdelete" class="mt-4"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Bootstrap JS and jQuery -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<!-- Custom JavaScript for AJAX requests -->
+
+</body>
+<script>
+    const createform = document.getElementById('createsubmit')
+    console.log(createform)
+    createform.addEventListener('click',
+    function(event){
+        createPatient()
+    })
+    function createPatient() {
+        const firstname = document.getElementById('firstname').value;
+        const lastname = document.getElementById('lastname').value;
+        const phone = document.getElementById('phone').value;
+
+        const age = document.getElementById('age').value;
+        
+        const record = document.getElementById('record').value;
+        console.log(phone)
+        console.log(firstname)
+        console.log(lastname)
+
+        console.log(age)
+
+        console.log(record)
+        
+        //  main.js
+        
+        // POST request using fetch()
+        fetch("http://localhost:5000/create-patient", {
+            
+            // Adding method type
+            method: "POST",
+
+            
+            // Adding body or contents to send
+            body: JSON.stringify({
+                firstname: firstname,
+                lastname: lastname,
+                phone: phone,
+
+                age: age,
+
+                record: record
+            }),
+            
+            // Adding headers to the request
+            headers: {
+                'Content-Type':'application/x-www-form-urlencoded'
+            }
+        })
+        
+        // Converting to JSON
+        .then(response => response.json())
+        
+        // Displaying results to console
+        .then(data => {console.log(data)
+            const pdc = document.getElementById('patientcreate');
+            pdc.innerHTML =  `<h5>Patient created:</h5><pre>${JSON.stringify(data, null, 2)}</pre>`
+                }).catch(error=>{
+                    console.log('Error')
+                });
+            }
+        
+
+    function getPatientRecords() {
+        console.log('nnnn')
+        const patientRecordsDiv = document.getElementById('patientRecords');
+        patientRecordsDiv.innerHTML = `<h5>Patient Records:</h5>`
+        const ssnGet = document.getElementById('ssnget').value;
+        const firstnameGet = document.getElementById('firstnameget').value;
+        const lastnameGet = document.getElementById('lastnameget').value;
+        var url = `http://localhost:5000/records?ssn=${ssnGet}&firstname=${firstnameGet}&lastname=${lastnameGet}&reasonforvisit=medicalrecords`
+        console.log(url)
+        fetch(url)
+        .then(response => response.json())
+        .then(data => {
+            console.log(data)
+            
+            patientRecordsDiv.innerHTML = `<h5>Patient Records:</h5><pre>${JSON.stringify(data, null, 2)}</pre>`;
+        })
+        .catch(error => {
+            console.error('Error getting patient records:', error);
+        });
+    }
+
+    function updatePatient() {
+        console.log('asdfasdf')
+        const ssnUpdate = document.getElementById('ssnupdate').value;
+        const firstnameUpdate = document.getElementById('firstnameupdate').value;
+        const lastnameUpdate = document.getElementById('lastnameupdate').value;
+        const phoneUpdate = document.getElementById('phoneupdate').value;
+        const recordUpdate = document.getElementById('recordupdate').value;
+        console.log(recordUpdate)
+        fetch('http://localhost:5000/update-patient', {
+            method: 'PUT',
+            headers: {
+                'Content-Type':'application/x-www-form-urlencoded'
+            },
+            body: JSON.stringify({
+                ssn: ssnUpdate,
+                firstname: firstnameUpdate,
+                lastname: lastnameUpdate,
+                phone: phoneUpdate,
+                record:recordUpdate
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            const update_div = document.getElementById('patientupdate');
+            update_div.innerHTML = 'Patient Updated successfully'
+            console.log('Patient updated successfully:', data);
+        })
+        .catch(error => {
+            console.error('Error updating patient:', error);
+        });
+    }
+
+    function deletePatient() {
+        const ssnDelete = document.getElementById('ssndelete').value;
+        const firstnameDelete = document.getElementById('firstnamedelete').value;
+        const lastnameDelete = document.getElementById('lastnamedelete').value;
+        console.log(lastnameDelete)
+        fetch('http://localhost:5000/delete-patient', {
+            method: 'DELETE',
+            headers: {
+                'Content-Type':'application/x-www-form-urlencoded'
+            },
+            body: JSON.stringify({
+                ssn: ssnDelete,
+                firstname: firstnameDelete,
+                lastname: lastnameDelete
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            const pdc = document.getElementById('patientdelete');
+            pdc.innerHTML = 'Patient deleted.'
+            console.log('Patient deleted successfully:', data);
+        })
+        .catch(error => {
+            console.error('Error deleting patient:', error);
+        });
+    }
+</script>
+</html>
